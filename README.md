@@ -1,6 +1,6 @@
 # @codewusama/task-board
 
-Reusable Kanban task board component for Ember AI applications.
+Reusable Kanban task board component with built-in create/detail UI.
 
 ## Installation
 
@@ -9,6 +9,8 @@ npm install @codewusama/task-board
 ```
 
 ## Quick Start
+
+No render props needed. The package ships with a complete UI out of the box:
 
 ```tsx
 import { TaskBoardProvider, TaskBoard } from '@codewusama/task-board';
@@ -33,11 +35,20 @@ function App() {
         { slug: 'my-project', name: 'My Project' },
       ]}
     >
-      <TaskBoard />
+      <TaskBoard onShareFeedback={() => router.push('/feedback')} />
     </TaskBoardProvider>
   );
 }
 ```
+
+This gives you:
+- Kanban board with drag-and-drop
+- Built-in **CreateTaskModal** (two-column layout with title, structured description, priority, status, tags)
+- Built-in **TaskDetailPanel** (slide-over with properties grid, description sections, activity timeline, comments with @mentions)
+- Notification bell with polling
+- Tag filtering
+- Share links
+- Loading skeletons and empty states
 
 ## Props / Config Reference
 
@@ -64,13 +75,34 @@ function App() {
 |------|------|-------------|
 | `className` | `string` | CSS class for the outer container |
 | `headerActions` | `ReactNode` | Additional buttons in the header |
-| `renderTaskDetail` | `function` | Custom render for task detail panel |
-| `renderCreateTask` | `function` | Custom render for create task modal |
+| `onShareFeedback` | `() => void` | Callback for Share Feedback button. Hidden if omitted. |
+| `onTaskOpen` | `(task) => void` | Callback when a task is clicked |
+| `renderTaskDetail` | `function` | Override for task detail panel (built-in used if omitted) |
+| `renderCreateTask` | `function` | Override for create task modal (built-in used if omitted) |
+
+### Overriding built-in UI
+
+If you need custom create/detail UI, pass render props:
+
+```tsx
+<TaskBoard
+  renderCreateTask={({ projectSlug, defaultStatus, onClose, onCreate }) => (
+    <MyCustomCreateModal ... />
+  )}
+  renderTaskDetail={({ task, onClose, onUpdate }) => (
+    <MyCustomDetailPanel ... />
+  )}
+/>
+```
 
 ## Using Individual Components
 
 ```tsx
-import { TaskCard, PriorityBadge, UserAvatar, useTaskActions } from '@codewusama/task-board';
+import {
+  TaskCard, PriorityBadge, UserAvatar,
+  CreateTaskModal, TaskDetailPanel,
+  useTaskActions,
+} from '@codewusama/task-board';
 
 // Use hooks independently
 function MyCustomUI() {
@@ -113,7 +145,6 @@ function MyCustomUI() {
 ## Development
 
 ```bash
-cd packages/task-board
 npm install
 npm run dev    # Watch mode
 npm run build  # Production build

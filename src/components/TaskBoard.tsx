@@ -10,7 +10,9 @@ import { BoardSkeleton } from './SkeletonPulse';
 import { KanbanColumn } from './KanbanColumn';
 import { FilterBar } from './FilterBar';
 import { NotificationBell } from './NotificationBell';
-import { PlusIcon, XIcon } from '../icons';
+import { CreateTaskModal } from './CreateTaskModal';
+import { TaskDetailPanel } from './TaskDetailPanel';
+import { PlusIcon, XIcon, FeedbackIcon } from '../icons';
 
 export interface TaskBoardProps {
   /** Optional class name for the outer container */
@@ -19,9 +21,11 @@ export interface TaskBoardProps {
   headerActions?: React.ReactNode;
   /** Callback when a task detail panel should open */
   onTaskOpen?: (task: Task) => void;
-  /** Render function for the task detail panel */
+  /** Callback for the Share Feedback button. If not provided, the button is hidden. */
+  onShareFeedback?: () => void;
+  /** Render function for the task detail panel. If omitted, uses built-in TaskDetailPanel. */
   renderTaskDetail?: (props: { task: Task; onClose: () => void; onUpdate: () => void }) => React.ReactNode;
-  /** Render function for the create task modal */
+  /** Render function for the create task modal. If omitted, uses built-in CreateTaskModal. */
   renderCreateTask?: (props: { projectSlug: string; defaultStatus: string; onClose: () => void; onCreate: () => void }) => React.ReactNode;
 }
 
@@ -29,6 +33,7 @@ export function TaskBoard({
   className = "",
   headerActions,
   onTaskOpen,
+  onShareFeedback,
   renderTaskDetail,
   renderCreateTask,
 }: TaskBoardProps) {
@@ -130,6 +135,11 @@ export function TaskBoard({
 
   const predefinedValues = PREDEFINED_TAGS.map((p) => p.value);
 
+  // Built-in create/detail handlers
+  const handleCreateClose = () => setCreateForStatus("");
+  const handleCreateDone = () => { board.fetchTasks(); board.showSuccess("Task created"); };
+  const handleDetailClose = () => setSelectedTask(null);
+
   return (
     <div className={`flex flex-col h-full ${className}`}>
       {/* Header */}
@@ -139,6 +149,15 @@ export function TaskBoard({
             Task Board
           </h1>
           <div className="flex items-center gap-2">
+            {onShareFeedback && (
+              <button
+                onClick={onShareFeedback}
+                className="flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 px-3 py-2 sm:py-2.5 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
+              >
+                <FeedbackIcon size={16} />
+                <span className="hidden sm:inline">Share Feedback</span>
+              </button>
+            )}
             {headerActions}
             {features.notifications && (
               <NotificationBell onOpenTask={handleOpenTaskFromNotification} />
@@ -235,20 +254,38 @@ export function TaskBoard({
         </>
       )}
 
-      {/* Create Task Modal */}
-      {createForStatus && renderCreateTask && renderCreateTask({
-        projectSlug: board.selectedProject,
-        defaultStatus: createForStatus,
-        onClose: () => setCreateForStatus(""),
-        onCreate: () => { board.fetchTasks(); board.showSuccess("Task created"); },
-      })}
+      {/* Create Task Modal — render prop override or built-in */}
+      {createForStatus && (
+        renderCreateTask
+          ? renderCreateTask({
+              projectSlug: board.selectedProject,
+              defaultStatus: createForStatus,
+              onClose: handleCreateClose,
+              onCreate: handleCreateDone,
+            })
+          : <CreateTaskModal
+              projectSlug={board.selectedProject}
+              defaultStatus={createForStatus}
+              onClose={handleCreateClose}
+              onCreate={handleCreateDone}
+            />
+      )}
 
-      {/* Task Detail */}
-      {selectedTask && renderTaskDetail && renderTaskDetail({
-        task: selectedTask,
-        onClose: () => setSelectedTask(null),
-        onUpdate: board.fetchTasks,
-      })}
+      {/* Task Detail — render prop override or built-in */}
+      {selectedTask && (
+        renderTaskDetail
+          ? renderTaskDetail({
+              task: selectedTask,
+              onClose: handleDetailClose,
+              onUpdate: board.fetchTasks,
+            })
+          : <TaskDetailPanel
+              task={selectedTask}
+              projectSlug={board.selectedProject}
+              onClose={handleDetailClose}
+              onUpdate={board.fetchTasks}
+            />
+      )}
     </div>
   );
 }

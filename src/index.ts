@@ -19,6 +19,10 @@ export { MentionText, toDisplayText, toStoredText } from './components/MentionTe
 export { MentionTextarea } from './components/MentionTextarea';
 export type { MentionTextareaProps } from './components/MentionTextarea';
 export { SkeletonPulse, SkeletonCard, BoardSkeleton } from './components/SkeletonPulse';
+export { CreateTaskModal } from './components/CreateTaskModal';
+export type { CreateTaskModalProps } from './components/CreateTaskModal';
+export { TaskDetailPanel } from './components/TaskDetailPanel';
+export type { TaskDetailPanelProps } from './components/TaskDetailPanel';
 
 // ─── Provider ───
 export { TaskBoardProvider, useTaskBoardContext } from './context/TaskBoardProvider';
@@ -99,4 +103,5 @@ export {
   PencilIcon,
   TrashIcon,
   LockIcon,
+  FeedbackIcon,
 } from './icons';

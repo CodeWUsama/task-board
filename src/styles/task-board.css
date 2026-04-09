@@ -10,6 +10,26 @@
   to { transform: translateX(0); }
 }
 
+/* Fade in */
+@keyframes eb-tb-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Zoom in */
+@keyframes eb-tb-zoom-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.eb-tb-animate-fade-in {
+  animation: eb-tb-fade-in 0.1s ease-out;
+}
+
+.eb-tb-animate-zoom-in {
+  animation: eb-tb-zoom-in 0.1s ease-out;
+}
+
 /* Always-visible scrollbar for kanban board */
 .eb-tb-board-scroll {
   overflow-x: scroll;
