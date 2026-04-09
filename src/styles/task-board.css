@@ -1,0 +1,22 @@
+/* @codewusama/task-board styles */
+
+/* Hide scrollbar utility */
+.eb-tb-no-scrollbar::-webkit-scrollbar { display: none; }
+.eb-tb-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Slide-in from right for detail panel */
+@keyframes eb-tb-slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Always-visible scrollbar for kanban board */
+.eb-tb-board-scroll {
+  overflow-x: scroll;
+  scrollbar-color: #d4d4d4 #f5f5f5;
+  scrollbar-width: thin;
+}
+.eb-tb-board-scroll::-webkit-scrollbar { height: 10px; display: block !important; -webkit-appearance: none; }
+.eb-tb-board-scroll::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 5px; }
+.eb-tb-board-scroll::-webkit-scrollbar-thumb { background: #c4c4c4; border-radius: 5px; min-width: 40px; }
+.eb-tb-board-scroll::-webkit-scrollbar-thumb:hover { background: #a3a3a3; }
